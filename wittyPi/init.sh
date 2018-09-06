@@ -11,21 +11,37 @@
 # Description:       This service is used to manage Witty Pi 2 service
 ### END INIT INFO
 
-case "$1" in
-    start)
+start() {
         echo "Starting Witty Pi 2 Daemon..."
         sudo /home/pi/wittyPi/daemon.sh &
 	sleep 1
 	daemonPid=$(ps --ppid $! -o pid=)
 	echo $daemonPid > /var/run/wittypi_daemon.pid
-        ;;
-    stop)
-        echo "Stopping Witty Pi 2 Daemon..."
+}
+
+stop() {
+    echo "Stopping Witty Pi 2 Daemon..."
 	daemonPid=$(cat /var/run/wittypi_daemon.pid)
 	kill -9 $daemonPid
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    force-reload)
+        stop
+        start
         ;;
     *)
-        echo "Usage: /etc/init.d/wittypi start|stop"
+        echo "Usage: /etc/init.d/wittypi start|stop|restart|force-reload"
         exit 1
         ;;
 esac
